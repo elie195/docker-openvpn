@@ -254,7 +254,6 @@ export OVPN_COMP_LZO
 export OVPN_OTP_AUTH
 export OVPN_DUO_AUTH
 export OVPN_FRAGMENT
-export DUO_CONF
 
 # Preserve config
 if [ -f "$OVPN_ENV" ]; then
