@@ -336,6 +336,10 @@ if [ -n "$OVPN_DUO_AUTH" ]; then
 	read -p "Enter HOST: " HOST
 	echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
 	echo "reneg-sec 0" >> "$conf"
+    #Automation support
+    elif [ -n "$IKEY" ] && [ -n "$SKEY" ] && [ -n "$HOST" ]; then
+        echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
+        echo "reneg-sec 0" >> "$conf"
     else
 	echo "Duo not configured: must be executed in interactive mode (with '-it' flag)"
     fi
