@@ -23,6 +23,7 @@ fi
 
 cn="$1"
 parm="$2"
+conf=$OPENVPN/openvpn.conf
 
 if [ ! -f "$EASYRSA_PKI/private/${cn}.key" ]; then
     echo "Unable to find \"${cn}\", please try again or generate the key first" >&2
@@ -37,7 +38,14 @@ nobind
 dev $OVPN_DEVICE
 key-direction 1
 remote-cert-tls server
-
+"
+    if grep -q duo_openvpn.so $conf && [ $OVPN_DUO_AUTH -eq 1 ]; then
+	echo "
+auth-user-pass
+reneg-sec 0
+"
+fi
+echo "
 remote $OVPN_CN $OVPN_PORT $OVPN_PROTO
 "
     if [ "$mode" == "combined" ]; then

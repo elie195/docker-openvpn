@@ -43,6 +43,7 @@ usage() {
     echo
     echo "optional arguments:"
     echo " -2    Enable two factor authentication using Google Authenticator."
+    echo " -3    Enable two factor authentication using Duo Security."
     echo " -a    Authenticate  packets with HMAC using the given message digest algorithm (auth)."
     echo " -c    Enable client-to-client option"
     echo " -C    A list of allowable TLS ciphers delimited by a colon (cipher)."
@@ -83,7 +84,7 @@ OVPN_EXTRA_CONFIG=''
 [ -r "$OVPN_ENV" ] && source "$OVPN_ENV"
 
 # Parse arguments
-while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz2" opt; do
+while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz23" opt; do
     case $opt in
         a)
             OVPN_AUTH="$OPTARG"
@@ -136,6 +137,9 @@ while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz2" opt; do
         2)
             OVPN_OTP_AUTH=1
             ;;
+	3)
+	    OVPN_DUO_AUTH=1
+	    ;;
         f)
             OVPN_FRAGMENT=$OPTARG
             ;;
@@ -189,7 +193,9 @@ export OVPN_CLIENT_TO_CLIENT OVPN_PUSH OVPN_NAT OVPN_DNS OVPN_MTU OVPN_DEVICE
 export OVPN_TLS_CIPHER OVPN_CIPHER OVPN_AUTH
 export OVPN_COMP_LZO
 export OVPN_OTP_AUTH
+export OVPN_DUO_AUTH
 export OVPN_FRAGMENT
+export DUO_CONF
 
 # Preserve config
 if [ -f "$OVPN_ENV" ]; then
@@ -260,6 +266,21 @@ done
 if [ -n "$OVPN_OTP_AUTH" ]; then
     echo -e "\n\n# Enable OTP+PAM for user authentication" >> "$conf"
     echo "plugin /usr/lib/openvpn/plugins/openvpn-plugin-auth-pam.so openvpn" >> "$conf"
+fi
+
+# Optional Duo MFA support
+if [ -n "$OVPN_DUO_AUTH" ]; then
+    # Interactive mode must be used to enable Duo MFA
+    if [ -t 0 ]; then
+	echo -e "\n\n# Enable Duo for user authentication" >> "$conf"
+	read -p "Enter IKEY: " IKEY
+	read -p "Enter SKEY: " SKEY
+	read -p "Enter HOST: " HOST
+	echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
+	echo "reneg-sec 0" >> "$conf"
+    else
+	echo "Duo not configured: must be executed in interactive mode (with '-it' flag)"
+    fi
 fi
 
 set +e
