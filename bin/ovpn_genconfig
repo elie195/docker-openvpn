@@ -196,9 +196,9 @@ while getopts ":a:e:C:T:r:s:du:cp:n:DNmf:tz23" opt; do
         2)
             OVPN_OTP_AUTH=1
             ;;
-	3)
-	    OVPN_DUO_AUTH=1
-	    ;;
+        3)
+            OVPN_DUO_AUTH=1
+            ;;
         f)
             OVPN_FRAGMENT=$OPTARG
             ;;
