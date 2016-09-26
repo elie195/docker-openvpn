@@ -337,24 +337,22 @@ if [ -n "${OVPN_OTP_AUTH:-}" ]; then
 fi
 
 # Optional Duo MFA support
-if [ ! -z "$OVPN_DUO_AUTH" ]; then
-    if [ -n "$OVPN_DUO_AUTH" ]; then
-        # Interactive mode must be used to enable Duo MFA
-        if [ -t 0 ]; then
-	    echo -e "\n\n# Enable Duo for user authentication" >> "$conf"
-            read -p "Enter IKEY: " IKEY
-            read -p "Enter SKEY: " SKEY
-            read -p "Enter HOST: " HOST
-            echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
-            echo "reneg-sec 0" >> "$conf"
-        #Automation support
-        elif [ -n "$IKEY" ] && [ -n "$SKEY" ] && [ -n "$HOST" ]; then
-            echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
-            echo "reneg-sec 0" >> "$conf"
-        #Duo does not get added to the config if not run in interactive mode to prevent a broken conf file
-        else
-	    echo "Duo not configured: must be executed in interactive mode (with '-it' flag)"
-        fi
+if [ -n "${OVPN_DUO_AUTH:-}" ]; then
+    # Interactive mode must be used to enable Duo MFA
+    if [ -t 0 ]; then
+        echo -e "\n\n# Enable Duo for user authentication" >> "$conf"
+        read -p "Enter IKEY: " IKEY
+        read -p "Enter SKEY: " SKEY
+        read -p "Enter HOST: " HOST
+        echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
+        echo "reneg-sec 0" >> "$conf"
+    #Automation support
+    elif [ -n "$IKEY" ] && [ -n "$SKEY" ] && [ -n "$HOST" ]; then
+        echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
+        echo "reneg-sec 0" >> "$conf"
+    #Duo does not get added to the config if not run in interactive mode to prevent a broken conf file
+    else
+        echo "Duo not configured: must be executed in interactive mode (with '-it' flag)"
     fi
 fi
 
