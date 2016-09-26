@@ -347,7 +347,7 @@ if [ -n "${OVPN_DUO_AUTH:-}" ]; then
         echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
         echo "reneg-sec 0" >> "$conf"
     #Automation support
-    elif [ -n "$IKEY" ] && [ -n "$SKEY" ] && [ -n "$HOST" ]; then
+    elif [ -n "${IKEY:-}" ] && [ -n "${SKEY:-}" ] && [ -n "${HOST:-}" ]; then
         echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
         echo "reneg-sec 0" >> "$conf"
     #Duo does not get added to the config if not run in interactive mode to prevent a broken conf file
