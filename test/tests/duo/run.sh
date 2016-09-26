@@ -20,7 +20,7 @@ abort() { cat <<< "$@" 1>&2; exit 1; }
 ip addr ls
 SERV_IP=$(ip -4 -o addr show scope global  | awk '{print $4}' | sed -e 's:/.*::' | head -n1)
 # Configure server with Duo two factor authentication
-docker run -e $IKEY -e $SKEY -e $HOST -v $OVPN_DATA:/etc/openvpn --rm $IMG ovpn_genconfig -u udp://$SERV_IP -3
+docker run -e "IKEY=$IKEY" -e "SKEY=$SKEY" -e "HOST=$HOST" -v $OVPN_DATA:/etc/openvpn --rm $IMG ovpn_genconfig -u udp://$SERV_IP -3
 
 # nopass is insecure
 docker run -v $OVPN_DATA:/etc/openvpn --rm -it -e "EASYRSA_BATCH=1" -e "EASYRSA_REQ_CN=Travis-CI Test CA" $IMG ovpn_initpki nopass
