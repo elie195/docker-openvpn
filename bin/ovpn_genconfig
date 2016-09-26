@@ -337,7 +337,7 @@ if [ -n "${OVPN_OTP_AUTH:-}" ]; then
 fi
 
 # Optional Duo MFA support
-if [[ ! -z "$OVPN_DUO_AUTH" && -n "$OVPN_DUO_AUTH" ]]; then
+if [ -n "${OVPN_DUO_AUTH:-}" ]; then
     # Interactive mode must be used to enable Duo MFA
     if [ -t 0 ]; then
         echo -e "\n\n# Enable Duo for user authentication" >> "$conf"
