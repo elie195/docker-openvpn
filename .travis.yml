@@ -4,7 +4,7 @@ before_install:
 - docker --version
 install:
 - git clone https://github.com/docker-library/official-images.git official-images
-- DEBUG=1
+# - DEBUG=1
 before_script:
 - image="elie195/openvpn"
 - docker build -t "$image" .
