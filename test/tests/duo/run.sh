@@ -27,7 +27,6 @@ docker run -v $OVPN_DATA:/etc/openvpn --rm -it -e "EASYRSA_BATCH=1" -e "EASYRSA_
 
 docker run -v $OVPN_DATA:/etc/openvpn --rm -it $IMG easyrsa build-client-full $CLIENT nopass
 
-# Override the auth-user-pass directive to use a credentials file
 docker run -v $OVPN_DATA:/etc/openvpn --rm $IMG ovpn_getclient $CLIENT | tee $CLIENT_DIR/config.ovpn
 
 #Check that config was properly generated
@@ -35,7 +34,7 @@ docker run -v $OVPN_DATA:/etc/openvpn --rm $IMG grep -q "duo_openvpn.so" /etc/op
 
 #Check that client config was properly generated
 grep -q reneg-sec $CLIENT_DIR/config.ovpn
-
+grep -q auth-user-pass $CLIENT_DIR/config.ovpn
 #
 # Fire up the server
 #
