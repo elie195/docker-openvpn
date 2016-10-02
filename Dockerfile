@@ -7,9 +7,10 @@ MAINTAINER Kyle Manna <kyle@kylemanna.com>
 
 RUN echo "http://dl-4.alpinelinux.org/alpine/edge/community/" >> /etc/apk/repositories && \
     echo "http://dl-4.alpinelinux.org/alpine/edge/testing/" >> /etc/apk/repositories && \
-    apk add --update openvpn iptables bash easy-rsa openvpn-auth-pam google-authenticator pamtester python && \
+    apk add --update openvpn iptables bash easy-rsa openvpn-auth-pam google-authenticator pamtester python alpine-sdk && \
     ln -s /usr/share/easy-rsa/easyrsa /usr/local/bin && \
     mkdir -p /opt/duo && \
+    mkdir -p /opt/duo_raw && \
     rm -rf /tmp/* /var/tmp/* /var/cache/apk/* /var/cache/distfiles/*
 
 # Needed by scripts
@@ -33,3 +34,4 @@ ADD ./otp/openvpn /etc/pam.d/
 
 # Add support for Duo MFA
 ADD ./otp/duo_openvpn /opt/duo/
+ADD ./otp/duo_openvpn_raw /opt/duo_raw
