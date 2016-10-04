@@ -346,7 +346,8 @@ if [ -n "${OVPN_DUO_AUTH:-}" ]; then
         read -p "Enter HOST: " HOST
         echo -e "\n### Duo MFA Config Below" >> "$conf"
         echo "plugin /opt/duo/duo_openvpn.so $IKEY $SKEY $HOST" >> "$conf"
-        echo "reneg-sec 0" >> "$conf"
+        # Optional manual setting for "reneg-sec"
+        [ -n "${RENEG:-}" ] && echo "reneg-sec $RENEG" >> "$conf" || echo "reneg-sec 0" >> "$conf"
     #Automation support
     elif [ -n "${IKEY:-}" ] && [ -n "${SKEY:-}" ] && [ -n "${HOST:-}" ]; then
         echo -e "\n### Duo MFA Config Below" >> "$conf"
