@@ -19,7 +19,7 @@ install:
 # Assist with ci test debugging:
 #   - DEBUG=1
 before_script:
-    - image="kylemanna/openvpn"
+    - image="elie195/openvpn"
     - docker build -t "$image" .
     - docker inspect "$image"
     - docker run --rm "$image" openvpn --version || true # why does it return 1?
@@ -31,3 +31,7 @@ script:
 
 after_script:
     - docker images
+
+notifications:
+  slack:
+    secure: vHjwFy7hwRBvpqzEw8+9P6SXSw+/Gf/CriA61ZV3b61cB/POFTiKsPe2T9O2+3dF2LyzySPgAw8K2FUC1r36QldXTSFfG2I6BRGsayGwTVbrSACAVRM8Wch4ScLBfTKQHmeSd6dk6eMMkqEj0V6HtLWK/CeU1GwzL3WK67UFbLo//j+E4bEQ2g/CDeTlmYKzdmqT04e7SLvN5FOKXmKb/CBQfN+dwqeb+dgdimcMGCo2fUY/8IIWcmERo7OucosLamR+Gv8yUgSrcLmkp0Y7b/mcKFU9q+tJaMVzbzlzMvtHUQd0jU7RjFrr7NZa29mzEGIiWlfhuXN6c8rGQLDFtkNimghAgHILAvk7E853FGXnWoX9YE2QCpbu5vcU3FFysv/y1FzVzKnpfw/1dfRQ4OWVwumXPH10g6Znn8viyM+OXdAnSNiO0UCUFe2GVUJULQpnYe/m7xVt8UBPYIrdrVsPQnq1gB/1c6h/y5S2HNpLxCEYI3LGjsru+URA1bdnoy+SlSxe7mDORcIv1wWmXYMPWrXzYBFiVTc0fWPNzVyLNkqEOFiCs3Iss+b6qXrs/CJkueuQa01w4pdLP8RK/yDAL9qsOhnAmYBa2FoKw3B5LjDwNuO7b744UBNNUNbbZ4+G9kCEt2rJeX68ZtHrOd55MILCaH6320MSkY/bhIo=
