@@ -20,7 +20,9 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
 * [backroad.io](http://beta.backroad.io?utm_source=kylemanna/openvpn&utm_medium=readme&utm_campaign=20150621) - powered by *kylemanna/openvpn*
 
-## Quick Start
+## Quick Start (including Duo MFA support)
+
+* Ensure you have an application of type "OpenVPN" created in your Duo Admin panel. If not, create a new application and note the *IKEY*, *SKEY*, and *HOST* values
 
 * Pick a name for the `$OVPN_DATA` data volume container, it will be created automatically.
 
@@ -28,26 +30,38 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
 * Initialize the `$OVPN_DATA` container that will hold the configuration files and certificates
 
-        docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
-        docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn ovpn_initpki
+        docker run --name $OVPN_DATA -v /etc/openvpn -v /opt/duo busybox
+
+* Grab the latest Duo OpenVPN plugin code and compile it
+
+        docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn:build makeduo
+
+* Generate configuration files and certificates (enter *IKEY*, *SKEY*, and *HOST* values when prompted)
+
+        docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM -3
+        docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_initpki
 
 * Start OpenVPN server process
 
-        docker run -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN kylemanna/openvpn
+        docker run --volumes-from $OVPN_DATA -d -p 1194:1194/udp --cap-add=NET_ADMIN elie195/openvpn
 
 * Generate a client certificate without a passphrase
 
-        docker run -v $OVPN_DATA:/etc/openvpn --rm -it kylemanna/openvpn easyrsa build-client-full CLIENTNAME nopass
+        docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn easyrsa build-client-full CLIENTNAME nopass
 
 * Retrieve the client configuration with embedded certificates
 
-        docker run -v $OVPN_DATA:/etc/openvpn --rm kylemanna/openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
+        docker run --volumes-from $OVPN_DATA --rm elie195/openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
 
 ## Debugging Tips
 
+* Custom setting for reneg-sec (default setting is '0', but it might not work with some clients)
+
+        docker run --volumes-from $OVPN_DATA -e RENEG=36000 --rm -it elie195/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM -3
+
 * Create an environment variable with the name DEBUG and value of 1 to enable debug output (using "docker -e").
 
-        docker run -v $OVPN_DATA:/etc/openvpn -p 1194:1194/udp --privileged -e DEBUG=1 kylemanna/openvpn
+        docker run --volumes-from $OVPN_DATA -p 1194:1194/udp --privileged -e DEBUG=1 elie195/openvpn
 
 * Test using a client that has openvpn installed correctly 
 

@@ -5,7 +5,12 @@ rm -rf /opt/duo/*
 mkdir -p /opt/duo/src
 
 # Download latest version of Duo OpenVPN plugin
-wget -O /opt/duo/src/master.zip "${DUOGIT}"
+if [ -n "${DUOGIT:-}" ]; then
+    wget -O /opt/duo/src/master.zip "${DUOGIT}"
+else
+    echo "Github URL not defined. Make sure to run from Dockerfile"
+    exit 1
+fi
 
 # Compile and install
 cd /opt/duo/src/ && unzip master.zip
