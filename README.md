@@ -22,7 +22,7 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
 ## Quick Start (including Duo MFA support)
 
-* Ensure you have an application of type "OpenVPN" created in your Duo Admin panel. If not, create a new application and note the *IKEY*, *SKEY*, and *HOST* values
+* Ensure you have an application of type "OpenVPN" created in your Duo Admin panel. If not, create a new application and note the **IKEY**, **SKEY**, and **HOST** values
 
 * Pick a name for the `$OVPN_DATA` data volume container, it will be created automatically.
 
@@ -34,9 +34,9 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
 * Grab the latest Duo OpenVPN plugin code and compile it
 
-        docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn:build makeduo
+        docker run --volumes-from $OVPN_DATA --rm elie195/openvpn:build makeduo
 
-* Generate configuration files and certificates (enter *IKEY*, *SKEY*, and *HOST* values when prompted)
+* Generate configuration files and certificates (enter **IKEY**, **SKEY**, and **HOST** values when prompted)
 
         docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM -3
         docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_initpki
