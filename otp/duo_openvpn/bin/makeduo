@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Cleanup and prepare
+rm -rf /opt/duo/*
+mkdir -p /opt/duo/src
+
+# Download latest version of Duo OpenVPN plugin
+if [ -n "${DUOGIT:-}" ]; then
+    wget -O /opt/duo/src/master.zip "${DUOGIT}"
+else
+    echo "Github URL not defined. Make sure to run from Dockerfile"
+    exit 1
+fi
+
+# Compile and install
+cd /opt/duo/src/ && unzip master.zip
+cd duo*
+make && make install
+
+[ $? -eq 0 ] && echo "Successfully installed Duo plugin"
+
+echo -n "Cleaning up..." && rm -rf /opt/duo/src && echo -n "Done"
+echo ""

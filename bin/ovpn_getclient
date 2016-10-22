@@ -40,10 +40,20 @@ key-direction 1
 remote-cert-tls server
 "
     if grep -q duo_openvpn.so $conf && [ $OVPN_DUO_AUTH -eq 1 ]; then
+	REGEX='reneg-sec[[:space:]]([0-9]+)'
+	if grep -q "reneg-sec 0" $conf ; then
 	echo "
 auth-user-pass
 reneg-sec 0
 "
+	else
+	[[ `cat $conf` =~ $REGEX ]]
+	RENEG_TIME="${BASH_REMATCH[1]}"
+	echo "
+auth-user-pass
+reneg-sec $RENEG_TIME
+" 
+fi
 fi
 echo "
 remote $OVPN_CN $OVPN_PORT $OVPN_PROTO

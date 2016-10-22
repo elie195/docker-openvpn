@@ -7,6 +7,7 @@ OVPN_DATA=basic-data-otp
 CLIENT=travis-client
 #Change once merged
 IMG=elie195/openvpn
+BUILD_IMG=elie195/openvpn:build
 OTP_USER=otp
 #Duo testing config
 IKEY=testIKEY
@@ -19,18 +20,22 @@ abort() { cat <<< "$@" 1>&2; exit 1; }
 
 ip addr ls
 SERV_IP=$(ip -4 -o addr show scope global  | awk '{print $4}' | sed -e 's:/.*::' | head -n1)
+
+# Build Duo image
+docker run -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm $BUILD_IMG makeduo
+
 # Configure server with Duo two factor authentication
-docker run -e "IKEY=$IKEY" -e "SKEY=$SKEY" -e "HOST=$HOST" -v $OVPN_DATA:/etc/openvpn --rm $IMG ovpn_genconfig -u udp://$SERV_IP -3
+docker run -e "IKEY=$IKEY" -e "SKEY=$SKEY" -e "HOST=$HOST" -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm $IMG ovpn_genconfig -u udp://$SERV_IP -3
 
 # nopass is insecure
-docker run -v $OVPN_DATA:/etc/openvpn --rm -it -e "EASYRSA_BATCH=1" -e "EASYRSA_REQ_CN=Travis-CI Test CA" $IMG ovpn_initpki nopass
+docker run -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm -it -e "EASYRSA_BATCH=1" -e "EASYRSA_REQ_CN=Travis-CI Test CA" $IMG ovpn_initpki nopass
 
-docker run -v $OVPN_DATA:/etc/openvpn --rm -it $IMG easyrsa build-client-full $CLIENT nopass
+docker run -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm -it $IMG easyrsa build-client-full $CLIENT nopass
 
-docker run -v $OVPN_DATA:/etc/openvpn --rm $IMG ovpn_getclient $CLIENT | tee $CLIENT_DIR/config.ovpn
+docker run -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm $IMG ovpn_getclient $CLIENT | tee $CLIENT_DIR/config.ovpn
 
 #Check that config was properly generated
-docker run -v $OVPN_DATA:/etc/openvpn --rm $IMG grep -q "duo_openvpn.so" /etc/openvpn/openvpn.conf
+docker run -v $OVPN_DATA:/etc/openvpn -v $OVPN_DATA:/opt/duo --rm $IMG grep -q "duo_openvpn.so" /etc/openvpn/openvpn.conf
 
 #Check that client config was properly generated
 grep -q reneg-sec $CLIENT_DIR/config.ovpn

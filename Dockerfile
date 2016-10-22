@@ -22,6 +22,9 @@ ENV EASYRSA_VARS_FILE $OPENVPN/vars
 
 VOLUME ["/etc/openvpn"]
 
+# Add Duo MFA files (built separately)
+VOLUME ["/opt/duo"]
+
 # Internally uses port 1194/udp, remap using `docker run -p 443:1194/tcp`
 EXPOSE 1194/udp
 
@@ -32,6 +35,3 @@ RUN chmod a+x /usr/local/bin/*
 
 # Add support for OTP authentication using a PAM module
 ADD ./otp/openvpn /etc/pam.d/
-
-# Add support for Duo MFA
-ADD ./otp/duo_openvpn /opt/duo/
