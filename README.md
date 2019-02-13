@@ -34,7 +34,7 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
         docker run --volumes-from $OVPN_DATA --rm elie195/openvpn:build makeduo
 
-* Generate configuration files and certificates (enter **IKEY**, **SKEY**, and **HOST** values when prompted). For the second step, pick a secure password for the OpenVPN Certificate Authority (CA). You can accept the default Common Name (CN) when prompted.
+* Generate configuration files and certificates (enter **IKEY**, **SKEY**, and **HOST** values when prompted).
 
         docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM -3
         docker run --volumes-from $OVPN_DATA --rm -it elie195/openvpn ovpn_initpki
